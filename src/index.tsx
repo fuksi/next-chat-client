@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'mobx-react'
 import { Auth0Provider } from './contexts/auth0-context'
+import '98.css'
 
 import './index.css'
 import App from './App'

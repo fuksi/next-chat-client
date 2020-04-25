@@ -2,6 +2,7 @@ import React, { useContext } from 'react'
 
 import './App.css'
 import { useAuth0 } from './contexts/auth0-context'
+import Login from './components/Login'
 
 
 function App() {
@@ -12,14 +13,7 @@ function App() {
       <div className="hero is-info is-fullheight">
         <div className="hero-body">
           <div className="container has-text-centered">
-            {!isLoading && !user && (
-              <>
-                <h1>Click Below!</h1>
-                <button onClick={loginWithRedirect} className="button is-danger">
-                  Login
-              </button>
-              </>
-            )}
+            {!isLoading && !user && <Login/>}
             {!isLoading && user && (
               <>
                 <h1>You are logged in!</h1>
