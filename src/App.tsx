@@ -3,6 +3,7 @@ import React, { useContext } from 'react'
 import './App.css'
 import { useAuth0 } from './contexts/auth0-context'
 import Login from './components/Login'
+import TopBar from './components/TopBar'
 
 
 function App() {
@@ -13,21 +14,10 @@ function App() {
       <div className="hero is-info is-fullheight">
         <div className="hero-body">
           <div className="container has-text-centered">
-            {!isLoading && !user && <Login/>}
+            {!isLoading && !user && <Login></Login>}
             {!isLoading && user && (
               <>
-                <h1>You are logged in!</h1>
-                <p>Hello {user.name}</p>
-
-                {user.picture && <img src={user.picture} alt="My Avatar" />}
-                <hr />
-
-                <button
-                  onClick={() => logout({ returnTo: window.location.origin })}
-                  className="button is-small is-dark"
-                >
-                  Logout
-                </button>
+                <TopBar></TopBar>
               </>
             )}
           </div>
