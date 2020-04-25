@@ -4,6 +4,7 @@ import './App.css'
 import { useAuth0 } from './contexts/auth0-context'
 import Login from './components/Login'
 import TopBar from './components/TopBar'
+import Group from './components/Group'
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
             {!isLoading && user && (
               <>
                 <TopBar></TopBar>
+                <Group></Group>
               </>
             )}
           </div>
