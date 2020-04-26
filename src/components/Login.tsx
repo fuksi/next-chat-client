@@ -1,9 +1,9 @@
 import React from 'react'
-import { useAuth0 } from '../contexts/auth0-context'
+import { useUserContext } from '../contexts/user-context'
 import './Login.scss'
 
 function Login() {
-    const { loginWithRedirect } = useAuth0()
+    const { loginWithRedirect } = useUserContext()
     return (
         <div className="login">
             <pre style={{ maxWidth: "375px" }}>

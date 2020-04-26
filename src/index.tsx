@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'mobx-react'
-import { Auth0Provider } from './contexts/auth0-context'
+import { UserProvider } from './contexts/user-context'
 import '98.css'
 
 import './index.css'
@@ -11,9 +11,11 @@ import stores from './stores'
 
 ReactDOM.render(
     <React.StrictMode>
-        <Auth0Provider>
-            <Provider {...stores}><App /></Provider>
-        </Auth0Provider>
+        <Provider {...stores}>
+            <UserProvider>
+                <App />
+            </UserProvider>
+        </Provider>
     </React.StrictMode>,
     document.getElementById('root')
 )

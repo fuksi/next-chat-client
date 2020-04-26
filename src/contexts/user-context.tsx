@@ -1,11 +1,13 @@
 import React, { Component, createContext, useContext } from 'react'
 import createAuth0Client, { Auth0ClientOptions, Auth0Client, IdToken } from '@auth0/auth0-spa-js'
+import { inject } from 'mobx-react'
+import WssStore from '../stores/wss'
 
 const NOOA_LAB_AUTH0_DOMAIN = 'nooalab.eu.auth0.com'
 const NEXT_CHAT_CLIENT_ID = 'H4Ji4P1XuBn32r6FAaWWg0U3DHYdBdCA'
+const NEXT_CHAT_SERVICE_AUDIENCE = 'https://api.nextchat.com'
 
-export interface IAuth0Context {
-    message: string,
+export interface IUserContext {
     auth0Client: Auth0Client,
     isLoading: boolean,
     isAuthenticated: boolean,
@@ -18,20 +20,24 @@ export interface IAuth0Context {
 
 
 // Create and export context
-const Auth0Context = createContext<IAuth0Context>({} as IAuth0Context)
-export const useAuth0 = () => useContext(Auth0Context)
+const UserContext = createContext<IUserContext>({} as IUserContext)
+export const useUserContext = () => useContext(UserContext)
 
-// Create a provider
-export class Auth0Provider extends Component {
+@inject('wss')
+export class UserProvider extends Component<{wss?: WssStore}, any> {
+    
+    messageCounter = 0
+
     state = {
         isLoading: true,
         isAuthenticated: false,
-    } as IAuth0Context
+    } as IUserContext
 
     authConfig: Auth0ClientOptions = {
         domain: NOOA_LAB_AUTH0_DOMAIN,
         client_id: NEXT_CHAT_CLIENT_ID,
-        redirect_uri: window.location.origin
+        redirect_uri: window.location.origin,
+        audience: NEXT_CHAT_SERVICE_AUDIENCE
     }
 
     componentDidMount() {
@@ -48,8 +54,14 @@ export class Auth0Provider extends Component {
 
         const isAuthenticated = await auth0Client.isAuthenticated()
         const user = isAuthenticated ? await auth0Client.getUser() : null
-        this.setState({ auth0Client, isAuthenticated, user, isLoading: false })
+        this.setState({ auth0Client, isAuthenticated, user, isLoading: false }, async () => {
+            if (isAuthenticated) {
+                const accessToken = this.state.auth0Client.getTokenSilently()
+                this.props.wss!.initSignalR(accessToken)
+            }
+        })
     }
+
 
     async handleRedirectCallback() {
         this.setState({ isLoading: true })
@@ -66,7 +78,7 @@ export class Auth0Provider extends Component {
     render() {
         const { children } = this.props
         const auth0Client = this.state.auth0Client
-        const configObject: IAuth0Context = {
+        const configObject: IUserContext = {
             ...this.state,
             loginWithRedirect: (...p) => auth0Client.loginWithRedirect(...p),
             getTokenSilently: (...p) => auth0Client.getTokenSilently(...p),
@@ -75,9 +87,9 @@ export class Auth0Provider extends Component {
         }
 
         return (
-            <Auth0Context.Provider value={configObject}>
+            <UserContext.Provider value={configObject}>
                 {children}
-            </Auth0Context.Provider>
+            </UserContext.Provider>
         )
     }
 }

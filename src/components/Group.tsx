@@ -1,25 +1,19 @@
 import React from 'react'
 import './Group.scss'
+import { inject, observer } from 'mobx-react'
+import WssStore from '../stores/wss'
 
-class Group extends React.Component {
+@inject('wss')
+@observer
+class Group extends React.Component<{wss?: WssStore}, any> {
     render() {
-        const myGoups = [
-            { name: 'intro', selected: true },
-            { name: 'next level' },
-            { name: 'and the next' },
-            { name: 'and another' },
-        ]
-        const otherGroups = [
-            { name: 'intro' },
-            { name: 'next level' },
-            { name: 'and the next' },
-            { name: 'and another' },
-        ]
+        const { wss } = this.props
+        const { userGroups, otherGroups } = wss!.store
         return (
             <ul className="groups">
                 <li>My groups
                     <ul>
-                        {myGoups.map(g => <li className={g.selected ? 'selected' : ''}>
+                        {userGroups.map(g => <li className={g.selected ? 'selected' : ''}>
                             {g.name} {g.selected ? '(active)': ''}
                         </li>)}
                     </ul>

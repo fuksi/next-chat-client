@@ -1,7 +1,7 @@
-import UserStore from './user'
+import WssStore from './wss'
 
 const stores = {
-    user: new UserStore()
+    wss: new WssStore()
 }
 
 export default stores

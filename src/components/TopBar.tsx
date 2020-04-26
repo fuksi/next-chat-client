@@ -1,9 +1,9 @@
 import React from 'react'
-import { useAuth0 } from '../contexts/auth0-context'
+import { useUserContext } from '../contexts/user-context'
 import './TopBar.scss'
 
 function TopBar() {
-    const { user, logout } = useAuth0()
+    const { user, logout } = useUserContext()
     return (
         <div className="topbar">
             <pre>

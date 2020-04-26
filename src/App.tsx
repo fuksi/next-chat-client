@@ -1,14 +1,14 @@
-import React, { useContext } from 'react'
+import React from 'react'
 
 import './App.css'
-import { useAuth0 } from './contexts/auth0-context'
+import { useUserContext } from './contexts/user-context'
 import Login from './components/Login'
 import TopBar from './components/TopBar'
 import Group from './components/Group'
 
 
 function App() {
-  const { isLoading, user, logout, loginWithRedirect } = useAuth0()
+  const { isLoading, user } = useUserContext()
 
   return (
     <div className="App">
