@@ -29,6 +29,7 @@ class WssStore {
         this.connection!.on('JoinResult', res => this.joinGroupResultHandler(res))
         this.connection!.on('NewMessage', res => this.newMessageHandler(res))
         this.connection!.on('LeaveSuccess', res => this.leaveSuccessHandler(res))
+        this.connection!.on('NewGroupResult', res => this.newGroupResultHandler(res))
         // Todo: handle MemberJoin, MemberLeft
     }
 
@@ -72,6 +73,23 @@ class WssStore {
     }
 
     @action
+    newGroupResultHandler(res) {
+        if (!res.success) {
+            this.notify(res.errorMessage)
+        } else {
+            const currentUserGroups = [...this.userGroups]
+            currentUserGroups.forEach(g => g.selected = false)
+
+            const newGroup = res.group
+            newGroup.selected = true
+
+            this.userGroups = [...currentUserGroups, newGroup]
+
+            this.notify('Group created!')
+        }
+    }
+
+    @action
     leaveSuccessHandler(groupId: string) {
         const groupToMove = this.userGroups.find(g => g.id === groupId)
 
@@ -96,6 +114,11 @@ class WssStore {
         this.sendToHub('NewMessage', msg)
     }
 
+    wsCreateGroup(name: string) {
+        const msg = { newGroupName: name }
+        this.sendToHub('NewGroup', msg)
+    }
+
     wsJoinGroup(groupId: string) {
         const msg = { groupId }
         this.sendToHub('JoinGroup', msg)
@@ -108,6 +131,14 @@ class WssStore {
 
     wsRequestInitialState() {
         this.sendToHub('InitializeState')
+    }
+
+    notify(content: string) {
+        const el = document.getElementById("info-dialog")! as any
+        if (el) {
+            el.getElementsByClassName('info-dialog-content')[0].innerText = content
+            el.showModal()
+        }
     }
 }
 
