@@ -1,8 +1,6 @@
 import * as signalR from '@aspnet/signalr'
 import { observable, action } from 'mobx'
 
-const NEXT_CHAT_HUB = 'http://localhost:8471/chatHub'
-
 class WssStore {
 
     messageCounter = 0
@@ -14,7 +12,7 @@ class WssStore {
 
     async initSignalR(accessToken: string) {
         this.connection = new signalR.HubConnectionBuilder()
-            .withUrl(NEXT_CHAT_HUB, { accessTokenFactory: () => accessToken })
+            .withUrl(process.env.REACT_APP_NEXT_CHAT_HUB!, { accessTokenFactory: () => accessToken })
             .build()
 
         this.registerWsEventHandler()
