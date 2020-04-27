@@ -44,6 +44,13 @@ export class UserProvider extends Component<{wss?: WssStore}, any> {
         this.initializeAuth0()
     }
 
+    async initSignalR() {
+        if (this.state.isAuthenticated) {
+            const accessToken = this.state.auth0Client.getTokenSilently()
+            this.props.wss!.initSignalR(accessToken)
+        }
+    }
+
     async initializeAuth0() {
         const auth0Client = await createAuth0Client(this.authConfig)
         this.setState({ auth0Client })
@@ -54,12 +61,7 @@ export class UserProvider extends Component<{wss?: WssStore}, any> {
 
         const isAuthenticated = await auth0Client.isAuthenticated()
         const user = isAuthenticated ? await auth0Client.getUser() : null
-        this.setState({ auth0Client, isAuthenticated, user, isLoading: false }, async () => {
-            if (isAuthenticated) {
-                const accessToken = this.state.auth0Client.getTokenSilently()
-                this.props.wss!.initSignalR(accessToken)
-            }
-        })
+        this.setState({ auth0Client, isAuthenticated, user, isLoading: false }, async () => await this.initSignalR())
     }
 
 
@@ -69,7 +71,7 @@ export class UserProvider extends Component<{wss?: WssStore}, any> {
         await this.state.auth0Client.handleRedirectCallback()
         const user = await this.state.auth0Client.getUser()
 
-        this.setState({ user, isAuthenticated: true, isLoading: false })
+        this.setState({ user, isAuthenticated: true, isLoading: false }, async () => await this.initSignalR())
         window.history.replaceState({}, document.title, window.location.pathname)
     }
 

@@ -20,10 +20,8 @@ class WssStore {
     connection: signalR.HubConnection | null = null
     wsDataHandler: any[] = []
 
-    @observable store: any = {
-        otherGroups: [],
-        userGroups: []
-    }
+    @observable userGroups: any = []
+    @observable otherGroups: any = []
 
     registerWsEventHandler() {
         this.connection!.on(NEXT_CHAT_HUB_RECEIVED_TARGET, data => {
@@ -54,7 +52,11 @@ class WssStore {
 
     @action
     initialStateHandler(data) {
-        this.store = data.initialState
+        this.userGroups = data.initialState.userGroups
+        this.otherGroups = data.initialState.otherGroups
+        if (this.userGroups.length > 0) {
+            this.userGroups[0].selected = true
+        }
     }
 
 

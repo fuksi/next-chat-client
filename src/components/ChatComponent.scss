@@ -1,5 +1,9 @@
+.groups-container, .chatbox-container {
+    border-width: 1.5px;
+    margin-top: 20px;
+}
+
 .groups {
-    display: inline-block;
     max-width: 300px;
     padding-left: 20px;
     text-align: left;

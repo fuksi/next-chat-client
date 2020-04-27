@@ -4,7 +4,7 @@ import './App.css'
 import { useUserContext } from './contexts/user-context'
 import Login from './components/Login'
 import TopBar from './components/TopBar'
-import Group from './components/Group'
+import ChatComponent from './components/ChatComponent'
 
 
 function App() {
@@ -12,19 +12,13 @@ function App() {
 
   return (
     <div className="App">
-      <div className="hero is-info is-fullheight">
-        <div className="hero-body">
-          <div className="container has-text-centered">
-            {!isLoading && !user && <Login></Login>}
-            {!isLoading && user && (
-              <>
-                <TopBar></TopBar>
-                <Group></Group>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
+      {!isLoading && !user && <Login></Login>}
+      {!isLoading && user && (
+        <>
+          <TopBar></TopBar>
+          <ChatComponent></ChatComponent>
+        </>
+      )}
     </div>
   )
 }

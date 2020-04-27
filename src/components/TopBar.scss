@@ -1,8 +1,11 @@
+.topbar-container {
+    padding: 10px;
+    border-width: 1.5px;
+}
 .topbar {
-    pre {
-        text-align: right;
-        button {
-            margin-left: 15px;
-        }
+    text-align: right;
+    font-size: 10px;
+    button {
+        margin-left: 15px;
     }
 }

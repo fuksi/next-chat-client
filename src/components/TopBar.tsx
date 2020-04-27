@@ -5,16 +5,16 @@ import './TopBar.scss'
 function TopBar() {
     const { user, logout } = useUserContext()
     return (
-        <div className="topbar">
-            <pre>
-                <code>You are logged in as {user.name}</code>
+        <div className="nes-container topbar-container">
+            <section className="topbar">
+                You are logged in as {user.name}
                 <button
                     onClick={() => logout({ returnTo: window.location.origin })}
-                    className="button is-small is-dark"
+                    className="nes-btn is-warning"
                 >
                     Logout
                 </button>
-            </pre>
+            </section>
         </div>
     )
 }
