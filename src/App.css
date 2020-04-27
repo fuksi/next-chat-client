@@ -1,6 +1,14 @@
 html, body, pre, code, kbd, samp {
     font-family: "Press Start 2P";
-    font-size: 10px;
+    font-size: 11px;
+}
+
+html {
+  overflow-x: hidden;
+}
+
+.nes-container {
+  border-width: 1.5px;
 }
 
 .App {

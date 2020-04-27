@@ -46,7 +46,7 @@ export class UserProvider extends Component<{wss?: WssStore}, any> {
 
     async initSignalR() {
         if (this.state.isAuthenticated) {
-            const accessToken = this.state.auth0Client.getTokenSilently()
+            const accessToken = await this.state.auth0Client.getTokenSilently()
             this.props.wss!.initSignalR(accessToken)
         }
     }
