@@ -113,21 +113,22 @@ class ChatComponent extends React.Component<{ wss?: WssStore }, any> {
 
     renderChatBox() {
         const { userGroups } = this.props.wss!
+        const userId = this.props.wss!.user.sub
         const activeGroup = userGroups.find(g => g.selected)
 
         if (!activeGroup || this.state.groupToJoin) return null
 
         return (
             <>
-                <div id="chatbox" className="nes-container with-title is-centered chatbox-container">
+                <div id="chatbox" className="nes-container with-title chatbox-container">
                     <p className="title">{activeGroup.name} </p>
 
                     {activeGroup.messages.map(m => (
-                        <section className="message">
-                            <div className="nes-balloon from-left">
+                        <section className={"message " + (m.userId === userId ? "align-right" : "")}>
+                            <div className={"nes-balloon " + (m.userId === userId ? "from-right" : "from-left")}>
                                 <p>{m.content}</p>
                             </div>
-                            <p className="nes-bcrikko">{m.createdAt} {m.userId}</p>
+                            <p className="nes-bcrikko">{m.createdAt} {m.email ? m.email : m.userId}</p>
                         </section>
                     ))}
                 </div>
@@ -140,7 +141,7 @@ class ChatComponent extends React.Component<{ wss?: WssStore }, any> {
                         onClick={e => this.onSendMessageClicked(activeGroup.id)}>
                         Send
                     </button>
-                    <button className="nes-btn is-error"
+                    <button className="nes-btn is-error leave-group-btn"
                         onClick={e => this.onLeaveGroupClicked(activeGroup.id)}>
                         Leave group
                     </button>
@@ -152,15 +153,20 @@ class ChatComponent extends React.Component<{ wss?: WssStore }, any> {
     renderJoinBox() {
         if (!this.state.groupToJoin) return null
 
+        const { name, isFull } = this.state.groupToJoin
+
         return (
             <div className="nes-container with-title joinbox-container is-centered">
-                <p className="title">{this.state.groupToJoin.name} </p>
-                <p>
-                    Group still have space, click below to join group
-                </p>
-                <button onClick={e => this.onJoinGroupClicked()} className="button is-danger">
-                    Join group
-                </button>
+                <p className="title">{name}</p>
+                {!isFull && (
+                    <>
+                        <p>Group still have space, click below to join group</p>
+                        <button onClick={e => this.onJoinGroupClicked()} className="button is-danger">
+                            Join group
+                        </button>
+                    </>
+                )}
+                {isFull && <p>Group is full, please try other group or create new one</p>}
             </div>
         )
     }

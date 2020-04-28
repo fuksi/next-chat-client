@@ -29,7 +29,20 @@
 }
 
 .chatbox-container {
-    max-height: 700px;
+    padding-top: 20px;
+    max-height: 800px;
     overflow: scroll;
+    .message.align-right {
+        text-align: right;
+    }
+    .nes-bcrikko {
+        color: grey;
+    }
+}
+
+.new-message-container {
+    .leave-group-btn {
+        float: right;
+    }
 }
 

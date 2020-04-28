@@ -1,7 +1,9 @@
 import React from 'react'
 import LoadingOverlay from 'react-loading-overlay'
 import { inject, observer } from 'mobx-react'
+
 import WssStore from '../stores/wss'
+import './OverlayComponent.scss'
 
 @inject('wss')
 @observer

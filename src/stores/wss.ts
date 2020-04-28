@@ -1,5 +1,6 @@
 import * as signalR from '@aspnet/signalr'
 import { observable, action } from 'mobx'
+import jwt_decode from 'jwt-decode'
 
 class WssStore {
 
@@ -9,8 +10,12 @@ class WssStore {
 
     @observable userGroups: any = []
     @observable otherGroups: any = []
+    @observable user: any = {}
+    @observable processing: boolean = false
 
+    @action
     async initSignalR(accessToken: string) {
+        this.user = jwt_decode(accessToken)
         this.connection = new signalR.HubConnectionBuilder()
             .withUrl(process.env.REACT_APP_NEXT_CHAT_HUB!, { accessTokenFactory: () => accessToken })
             .build()
@@ -25,10 +30,13 @@ class WssStore {
     registerWsEventHandler() {
         this.connection!.on('InitialState', res => this.initialStateHandler(res))
         this.connection!.on('JoinResult', res => this.joinGroupResultHandler(res))
-        this.connection!.on('NewMessage', res => this.newMessageHandler(res))
-        this.connection!.on('LeaveSuccess', res => this.leaveSuccessHandler(res))
         this.connection!.on('NewGroupResult', res => this.newGroupResultHandler(res))
-        // Todo: handle MemberJoin, MemberLeft
+        this.connection!.on('LeaveSuccess', res => this.leaveSuccessHandler(res))
+
+        this.connection!.on('NewMessage', res => this.newMessageHandler(res))
+        this.connection!.on('NewGroup', res => this.newGroupHandler(res))
+        this.connection!.on('NewMember', res => this.groupMemberChangeHandler(res))
+        this.connection!.on('MemberLeft', res => this.groupMemberChangeHandler(res))
     }
 
     @action
@@ -49,6 +57,7 @@ class WssStore {
 
     @action
     initialStateHandler(res) {
+        this.processing = false
         this.userGroups = res.userGroups
         this.otherGroups = res.otherGroups
         if (this.userGroups.length > 0) {
@@ -61,8 +70,6 @@ class WssStore {
 
     @action
     joinGroupResultHandler(res) {
-        // TODO: handle failure case
-
         res.group.selected = true
         this.userGroups = [...this.userGroups, res.group]
         this.otherGroups = this.otherGroups.filter(g => g.id !== res.group.id)
@@ -72,6 +79,7 @@ class WssStore {
 
     @action
     newGroupResultHandler(res) {
+        this.processing = false
         if (!res.success) {
             this.notify(res.errorMessage)
         } else {
@@ -84,6 +92,26 @@ class WssStore {
             this.userGroups = [...currentUserGroups, newGroup]
 
             this.notify('Group created!')
+        }
+    }
+
+    @action
+    groupMemberChangeHandler(res) {
+        const affectedGroup = res.group
+        const allGroups = [...this.userGroups, ...this.otherGroups]
+        let match = allGroups.find(g => g.id === affectedGroup.id)
+        if (match) match.isFull =  affectedGroup.isFull
+
+        this.userGroups = [...this.userGroups]
+        this.otherGroups = [...this.otherGroups]
+    }
+
+    @action
+    newGroupHandler(res) {
+        const newGroup = res.group
+        const newGroupExistsInUserGroups = !!this.userGroups.find(g => g.id === newGroup.id)
+        if (!newGroupExistsInUserGroups) {
+            this.otherGroups = [...this.otherGroups, newGroup]
         }
     }
 
@@ -112,7 +140,9 @@ class WssStore {
         this.sendToHub('NewMessage', msg)
     }
 
+    @action
     wsCreateGroup(name: string) {
+        this.processing = true
         const msg = { newGroupName: name }
         this.sendToHub('NewGroup', msg)
     }
@@ -127,7 +157,9 @@ class WssStore {
         this.sendToHub('LeaveGroup', msg)
     }
 
+    @action
     wsRequestInitialState() {
+        this.processing = true
         this.sendToHub('InitializeState')
     }
 
