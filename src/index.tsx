@@ -6,14 +6,17 @@ import { UserProvider } from './contexts/user-context'
 import './index.css'
 import App from './App'
 import stores from './stores'
+import OverlayComponent from './components/OverlayComponent'
 
 
 ReactDOM.render(
     <React.StrictMode>
         <Provider {...stores}>
-            <UserProvider>
-                <App />
-            </UserProvider>
+            <OverlayComponent>
+                <UserProvider>
+                    <App />
+                </UserProvider>
+            </OverlayComponent>
         </Provider>
     </React.StrictMode>,
     document.getElementById('root')
