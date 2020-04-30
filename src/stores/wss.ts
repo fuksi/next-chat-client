@@ -70,6 +70,8 @@ class WssStore {
 
     @action
     joinGroupResultHandler(res) {
+        this.userGroups.forEach(g => g.selected = false)
+
         res.group.selected = true
         this.userGroups = [...this.userGroups, res.group]
         this.otherGroups = this.otherGroups.filter(g => g.id !== res.group.id)
